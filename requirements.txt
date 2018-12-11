@@ -5,6 +5,7 @@ six
 scikit-image
 mkl
 mkl_fft
+mkl-include
 dxchange
 numexpr
 futures ; python_version < "3"
