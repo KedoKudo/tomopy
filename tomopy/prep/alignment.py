@@ -630,15 +630,8 @@ def find_slits_corners_aps_1id(img,
             # the standard quadrant method
             for i, q in enumerate(quadrants):
                 cnrs[i, :] = np.array([q.col_func(np.gradient(medfilt(np.std(q.img, axis=0), kernel_size=medfilt_kernel_size))),  # x is col_idx
-                                       q.row_func(
-                    np.gradient(
-                        medfilt(
-                            np.std(
-                                q.img,
-                                axis=1),
-                            kernel_size=medfilt_kernel_size))),
-                    # y is row_idx
-                ])
+                                       q.row_func(np.gradient(medfilt(np.std(q.img, axis=1), kernel_size=medfilt_kernel_size))),  # y is row_idx
+                                      ])
             # add the origin offset back
             cnrs = cnrs + quadrantorigins
         elif method.lower() == 'quadrant+':
@@ -647,39 +640,32 @@ def find_slits_corners_aps_1id(img,
             # improve the curve fitting with Lorentz and Voigt fitting function
             for i, q in enumerate(quadrants):
                 # -- find x subpixel position
-                cnr_x_guess = q.col_func(
-                    np.gradient(
-                        medfilt(
-                            np.std(
-                                q.img,
-                                axis=0),
-                            kernel_size=medfilt_kernel_size)))
+                cnr_x_guess = q.col_func(np.gradient(medfilt(np.std(q.img, axis=0), kernel_size=medfilt_kernel_size)))
                 # isolate the strongest peak to fit
-                tmpx = np.arange(cnr_x_guess - 10, cnr_x_guess + 11)
+                tmpx = np.arange(max(cnr_x_guess - 10, 0), 
+                                 min(cnr_x_guess + 11, q.img.shape[1]),
+                                )
                 tmpy = np.gradient(np.std(q.img, axis=0))[tmpx]
-                # tmpy[0] is the value from the highest/lowest pixle
-                # tmpx[0] is basically cnr_x_guess
-                # 5.0 is the guessted std,
+                # use the quadrant method results as initial guess
+                # A     = tmpy[cnr_x_guess]
+                # mu    = cnr_x_guess
+                # sigma = 5.0  // use fixed value for now
                 coeff, _ = curve_fit(gauss1d, tmpx, tmpy,
-                                     p0=[tmpy[0], tmpx[0], 5.0],
+                                     p0=[tmpy[cnr_x_guess], cnr_x_guess, 5.0],
                                      maxfev=int(1e6),
-                                     )
+                                    )
                 cnrs[i, 0] = coeff[1]  # x position
                 # -- find y subpixel positoin
-                cnr_y_guess = q.row_func(
-                    np.gradient(
-                        medfilt(
-                            np.std(
-                                q.img,
-                                axis=1),
-                            kernel_size=medfilt_kernel_size)))
+                cnr_y_guess = q.row_func(np.gradient(medfilt(np.std(q.img, axis=1), kernel_size=medfilt_kernel_size)))
                 # isolate the peak (x, y here is only associated with the peak)
-                tmpx = np.arange(cnr_y_guess - 10, cnr_y_guess + 11)
+                tmpx = np.arange(max(cnr_y_guess - 10, 0), 
+                                 min(cnr_y_guess + 11, q.img.shape[0]),
+                                )
                 tmpy = np.gradient(np.std(q.img, axis=1))[tmpx]
                 coeff, _ = curve_fit(gauss1d, tmpx, tmpy,
-                                     p0=[tmpy[0], tmpx[0], 5.0],
+                                     p0=[tmpy[cnr_y_guess], cnr_y_guess, 5.0],
                                      maxfev=int(1e6),
-                                     )
+                                    )
                 cnrs[i, 1] = coeff[1]  # y posiiton
             # add the quadrant shift back
             cnrs = cnrs + quadrantorigins
