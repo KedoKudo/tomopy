@@ -798,7 +798,7 @@ def detector_drift_adjust_aps_1id(imgstacks,
     cnrs_found = np.array([quick_diff(proj_cnrs[n, :, :] - slit_cnr_ref) < 15
                            for n in nlist])
     kernels = [(medfilt2_kernel_size+2*i, medfilt_kernel_size+2*j)
-               for i in range(15)
+               for i in range(10)
                for j in range(15)]
     counter = 0
 
@@ -812,10 +812,14 @@ def detector_drift_adjust_aps_1id(imgstacks,
 
         # NOTE:
         #   Check to see if we run out of candidate kernels:
-        if counter > len(kernels):
+        if counter >= len(kernels):
             # we are giving up here...
             for idx, n_img in enumerate(nlist):
                 proj_cnrs[n_img, :, :] = slit_cnr_ref
+            if debug:
+                print(f"cannot detect the slits for:")
+                print(f"img@{nlist}")
+                print(f"use referene one instead!")
             break
         else:
             # test with differnt 2D and 1D kernels
