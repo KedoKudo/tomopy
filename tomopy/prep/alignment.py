@@ -744,6 +744,7 @@ def detector_drift_adjust_aps_1id(imgstacks,
                                   medfilt2_kernel_size=3,
                                   medfilt_kernel_size=3,
                                   ncore=None,
+                                  debug=False,
                                   ):
     """
     Adjust each still image based on the slit corners and generate report fig
@@ -760,6 +761,8 @@ def detector_drift_adjust_aps_1id(imgstacks,
         1D median filter kernel size for slit conner detection
     ncore : int, optional
         number of cores used for speed up
+    debug : bool, optional
+        toggle debug output to the terminal
 
     Returns
     -------
@@ -799,9 +802,14 @@ def detector_drift_adjust_aps_1id(imgstacks,
                for j in range(15)]
     counter = 0
 
+    if debug: print(f"No need for iterative searching: {cnrs_found.all()}")
+
     while not cnrs_found.all():
         nlist = [idx for idx, cnr_found in enumerate(cnrs_found)
                  if not cnr_found]
+        
+        if debug: print(f"@iter_{counter}, {len(nlist)} imgs to process")
+
         # NOTE:
         #   Check to see if we run out of candidate kernels:
         if counter > len(kernels):
@@ -812,6 +820,8 @@ def detector_drift_adjust_aps_1id(imgstacks,
         else:
             # test with differnt 2D and 1D kernels
             ks2d, ks1d = kernels[counter]
+        
+        if debug: print(f"\tkernel size (2D, 1D) = {ks2d}, {ks1d}")
 
         _cnrs = _calc_proj_cnrs(imgstacks, ncore, nlist,
                                 'quadrant+', ks2d, ks1d)
