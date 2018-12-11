@@ -646,12 +646,12 @@ def find_slits_corners_aps_1id(img,
                                  min(cnr_x_guess + 11, q.img.shape[1]),
                                 )
                 tmpy = np.gradient(np.std(q.img, axis=0))[tmpx]
-                # use the quadrant method results as initial guess
-                # A     = tmpy[cnr_x_guess]
-                # mu    = cnr_x_guess
+                # use the first point for init guess
+                # A     = tmpy[0]
+                # mu    = tmpx[0]
                 # sigma = 5.0  // use fixed value for now
                 coeff, _ = curve_fit(gauss1d, tmpx, tmpy,
-                                     p0=[tmpy[cnr_x_guess], cnr_x_guess, 5.0],
+                                     p0=[tmpy[0], tmpx[0], 5.0],
                                      maxfev=int(1e6),
                                     )
                 cnrs[i, 0] = coeff[1]  # x position
@@ -663,7 +663,7 @@ def find_slits_corners_aps_1id(img,
                                 )
                 tmpy = np.gradient(np.std(q.img, axis=1))[tmpx]
                 coeff, _ = curve_fit(gauss1d, tmpx, tmpy,
-                                     p0=[tmpy[cnr_y_guess], cnr_y_guess, 5.0],
+                                     p0=[tmpy[0], tmpx[0], 5.0],
                                      maxfev=int(1e6),
                                     )
                 cnrs[i, 1] = coeff[1]  # y posiiton
