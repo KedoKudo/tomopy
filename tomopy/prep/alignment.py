@@ -799,7 +799,7 @@ def detector_drift_adjust_aps_1id(imgstacks,
                            for n in nlist])
     kernels = [(medfilt2_kernel_size+2*i, medfilt_kernel_size+4*j)
                for i in range(10)
-               for j in range(8)]
+               for j in range(5)]
     counter = 0
 
     if debug: print(f"No need for iterative searching: {cnrs_found.all()}")
