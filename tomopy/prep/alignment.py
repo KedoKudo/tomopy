@@ -815,7 +815,23 @@ def detector_drift_adjust_aps_1id(imgstacks,
         if counter >= len(kernels):
             # we are giving up here...
             for idx, n_img in enumerate(nlist):
-                proj_cnrs[n_img, :, :] = slit_cnr_ref
+                # interpolate between known results
+                _pre = n_img - 1
+                while _pre in nlist:
+                    _pre -= 1 if _pre > 0 else None
+                    if _pre is None: break
+
+                _pst = n_img + 1
+                while _pst in nlist:
+                    _pst += 1 if _pst < proj_cnrs.shape[0]-1 else None
+                    if _pst is None: break
+                        
+                # use average for guess
+                if (_pre < 0) or (_pst > proj_cnrs.shape[0]-1):
+                    proj_cnrs[n_img, :, :] = slit_cnr_ref
+                else:
+                    proj_cnrs[n_img, :, :] = 0.5*(proj_cnrs[_pre, :, :]+proj_cnrs[_pst, :, :])
+
             if debug:
                 print(f"cannot detect the slits for:")
                 print(f"img@{nlist}")
