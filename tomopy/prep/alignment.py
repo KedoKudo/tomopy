@@ -823,7 +823,7 @@ def detector_drift_adjust_aps_1id(imgstacks,
 
                 _pst = n_img + 1
                 while _pst in nlist:
-                    _pst = _pst + 1 if _pst + 1 < proj_cnrs.shape[0]-1 else None
+                    _pst = _pst + 1 if _pst + 1 < proj_cnrs.shape[0] else None
                     if _pst is None: break
                 
                 _pre_cnr = 0 if _pre is None else proj_cnrs[_pre, :, :]/2
