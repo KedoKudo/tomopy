@@ -816,12 +816,12 @@ def detector_drift_adjust_aps_1id(imgstacks,
             # we are giving up here...
             for idx, n_img in enumerate(nlist):
                 # interpolate between known results
-                _pre = n_img - 1
+                _pre = n_img
                 while _pre in nlist:
                     _pre = _pre - 1 if _pre - 1 > 0 else None
                     if _pre is None: break
 
-                _pst = n_img + 1
+                _pst = n_img
                 while _pst in nlist:
                     _pst = _pst + 1 if _pst + 1 < proj_cnrs.shape[0] else None
                     if _pst is None: break
