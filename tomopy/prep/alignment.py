@@ -798,8 +798,8 @@ def detector_drift_adjust_aps_1id(imgstacks,
     cnrs_found = np.array([quick_diff(proj_cnrs[n, :, :] - slit_cnr_ref) < 15
                            for n in nlist])
     kernels = [(medfilt2_kernel_size+2*i, medfilt_kernel_size+4*j)
-               for i in range(8)
-               for j in range(4)]
+               for i in range(10)
+               for j in range(5)]
     counter = 0
 
     if debug: print(f"No need for iterative searching: {cnrs_found.all()}")
