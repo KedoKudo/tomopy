@@ -818,19 +818,28 @@ def detector_drift_adjust_aps_1id(imgstacks,
                 # interpolate between known results
                 _pre = n_img - 1
                 while _pre in nlist:
-                    _pre = _pre - 1 if _pre > 0 else None
+                    _pre = _pre - 1 if _pre - 1 > 0 else None
                     if _pre is None: break
 
                 _pst = n_img + 1
                 while _pst in nlist:
-                    _pst = _pst + 1 if _pst < proj_cnrs.shape[0]-1 else None
+                    _pst = _pst + 1 if _pst + 1 < proj_cnrs.shape[0]-1 else None
                     if _pst is None: break
+                
+                _pre_cnr = 0 if _pre is None else proj_cnrs[_pre, :, :]/2
+                _pst_cnr = 0 if _pst is None else proj_cnrs[_pst, :, :]/2
 
                 # use average for guess
+                # NOTE:
+                #   unfortunately, the slit detector  could fail when the 
+                #   slits are really close to the edge of FOV, which 
+                #   unfortunately will happen when the sample is really large.
+                #   The following is mostly just a workaround until a better 
+                #   solution can be found.
                 if None in [_pre, _pst]:
                     proj_cnrs[n_img, :, :] = slit_cnr_ref
                 else:
-                    proj_cnrs[n_img, :, :] = 0.5*(proj_cnrs[_pre, :, :]+proj_cnrs[_pst, :, :])
+                    proj_cnrs[n_img, :, :] = _pre_cnr + _pst_cnr
 
             if debug:
                 print(f"cannot detect the slits for:")
